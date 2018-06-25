@@ -88,6 +88,24 @@ describe('*', function () {
 		expect(i.next()).to.deep.equal(new Date('1970-01-01T00:00:03.000Z'));
 	});
 
+	it('rewind', async function () {
+		let i = new Class('0-1,3 0 0 * * *');
+		i.end = '1970-01-01 23:59:59.000Z+0';
+		expect(i.next()).to.deep.equal(new Date('1970-01-01T00:00:00.000Z'));
+		expect(i.next()).to.deep.equal(new Date('1970-01-01T00:00:01.000Z'));
+		i.rewind();
+		expect(i.next()).to.deep.equal(new Date('1970-01-01T00:00:00.000Z'));
+	});
+
+	it('set position', async function () {
+		let i = new Class('0-1,4 0 0 * * *');
+		i.start = '1970-01-01 00:00:00.000Z+0';
+		expect(i.next()).to.deep.equal(new Date('1970-01-01T00:00:00.000Z'));
+		expect(i.position).to.deep.equal(new Date('1970-01-01T00:00:00.000Z'));
+		expect(i.next()).to.deep.equal(new Date('1970-01-01T00:00:01.000Z'));
+		expect(i.position).to.deep.equal(new Date('1970-01-01T00:00:01.000Z'));
+	});
+
 	it('get next values', async function () {
 		let i = new Class('0-4 0 0 * * *');
 		i.end = '1970-01-01 23:59:59.000Z+0';
@@ -107,6 +125,11 @@ describe('*', function () {
 			new Date('1970-01-01T00:00:03.000Z'),
 			new Date('1970-01-01T00:00:04.000Z')
 		]);
+	});
+
+	it('toString', async function () {
+		let i = new Class('59 59 23 31 12 *');
+		expect(`${i}`).to.equal('59 59 23 31 12 *');
 	});
 
 	it(ERROR_INPUT_MUST_BE_A_STRING, async function () {

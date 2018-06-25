@@ -1,11 +1,13 @@
 {
-  "name": "crontime",
-  "version": "3.0.2",
+  "name": "cron-time",
+  "version": "0.0.3",
   "description": "Parse cron time string",
   "main": "index.js",
   "devDependencies": {
     "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.5",
     "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "chai": "^4.1.2",
     "del": "^3.0.0",
     "documentation": "^5.3.5",
@@ -15,25 +17,23 @@
     "gulp-documentation": "^3.2.1",
     "mocha": "^5.0.0"
   },
-  "dependencies": {
-    "babel-eslint": "^8.2.5",
-    "babel-preset-env": "^1.7.0"
-  },
+  "dependencies": {},
   "scripts": {
     "test": "mocha `find ./source -name '*.test.js'`",
-    "test:watch": "mocha `find ./source -name '*.test.js'` --watch",
-    "docs": "gulp docs",
-    "clean": "gulp clean"
+    "test:watch": "mocha `find ./source -name '*.test.js'` --watch"
   },
   "repository": {
     "type": "git"
   },
   "keywords": [
-    "js",
-    "async",
-    "promise",
-    "throttle"
+    "cron",
+    "crontab",
+    "time"
   ],
   "author": "Alexey Chepugov",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/a-chepugov/cron-time/issues"
+  },
+  "homepage": "https://github.com/a-chepugov/cron-time#readme"
 }

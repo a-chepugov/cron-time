@@ -7,10 +7,10 @@ import synonyms from './helpers/synonyms';
 export default class {
 	/**
 	 * Parse cron time string
-	 * @constructor crontime
-	 * @param {String} string - string that represents period in cron format
+	 * @constructor CronTime
+	 * @param {String} pattern - {@link pattern}
 	 * @example
-	 * import CronTime from 'crontime';
+	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
 	 * i.start = '1970-01-01 00:00:00.000Z+0'; // Not mandatory
 	 * i.end = '1970-01-01 23:59:59.000Z+0'; // Not mandatory
@@ -21,16 +21,48 @@ export default class {
 	 * const portion = i.nextPortion(2);
 	 * // [ '1970-01-01T00:00:01.000Z', '1970-01-01T00:00:04.000Z'] ;
 	 */
-	constructor(string) {
-		if (typeof string !== 'string') {
-			throw new Error(`${ERROR_INPUT_MUST_BE_A_STRING}. Got: ${string}`);
+	constructor(pattern) {
+		if (typeof pattern !== 'string') {
+			throw new Error(`${ERROR_INPUT_MUST_BE_A_STRING}. Got: ${pattern}`);
 		}
 
-		this._string = synonyms(string);
+		/**
+		 * String that represents period in cron format
+		 * @example
+		 * *  *  *  *  *  *
+		 * ┬  ┬  ┬  ┬  ┬  ┬
+		 * │  │  │  │  │  └─────────────── day of week (0 - 7) (0 and 7 - represents Sunday)
+		 * │  │  │  │  └────────────────── month (1 - 12)
+		 * │  │  │  └───────────────────── day of month (1 - 31)
+		 * │  │  └──────────────────────── hour (0 - 23)
+		 * │  └─────────────────────────── minute (0 - 59)
+		 * └────────────────────────────── second (0 - 59)
+		 *
+		 * * * * * * * - every second
+		 * 0 * * * * * - every minute
+		 * 0 0 * * * * - every hour
+		 * 0 0 0 * * * - every day
+		 * 0 0 0 * * 1 - every monday
+		 * 0 1-2 * * * - every first and second minutes of hour
+		 * 0 0 1,2 * * - every first and second hours of day
+		 * 0 0 0-12/2 * * - every second hour of day first half
+		 *
+		 * also you can use synonyms:
+		 * * @yearly   - 0 0 0 1 1 *
+		 * * @annually - 0 0 0 1 1 *
+		 * * @monthly  - 0 0 0 1 * *
+		 * * @weekly   - 0 0 0 * * 0
+		 * * @daily    - 0 0 0 * * *
+		 * * @hourly   - 0 0 * * * *
 
-		const sections = this._string.split(' ');
+		 *
+		 * @name pattern
+		 */
+		this._pattern = synonyms(pattern);
+
+		const sections = this._pattern.split(' ');
 		if (sections.length !== 6) {
-			throw new Error(`${ERROR_INPUT_MUST_HAVE_6_SECTIONS}: ${string}`);
+			throw new Error(`${ERROR_INPUT_MUST_HAVE_6_SECTIONS}: ${pattern}`);
 		}
 
 		this._sections = sections.map((item, index) => new Sections(item, index));
@@ -38,6 +70,13 @@ export default class {
 		this.rewind();
 	}
 
+	/**
+	 * Start value for searching matches to {@link pattern} values
+	 * @example
+	 * import CronTime from 'cron-time';
+	 * let i = new CronTime('0-1,4 0 0 * * *');
+	 * i.start = '1970-01-01 00:00:00.000Z+0';
+	 */
 	get start() {
 		return this._start;
 	}
@@ -46,6 +85,13 @@ export default class {
 		this._start = new Date(value);
 	}
 
+	/**
+	 * Final value for searching matches to {@link pattern} values
+	 * @example
+	 * import CronTime from 'cron-time';
+	 * let i = new CronTime('0-1,4 0 0 * * *');
+	 * i.end = '1970-12-31 00:00:00.000Z+0';
+	 */
 	get end() {
 		return this._end;
 	}
@@ -54,17 +100,35 @@ export default class {
 		this._end = new Date(value);
 	}
 
+	/**
+	 * Rewinds current matching position to {@link start}
+	 * @example
+	 * import CronTime from 'cron-time';
+	 * let i = new CronTime('0-1,4 0 0 * * *');
+	 * i.start = '1970-01-01 00:00:00.000Z+0';
+	 * i.next(); // '1970-01-01 00:00:00.000Z+0';
+	 * i.next(); // '1970-01-01 00:00:01.000Z+0';
+	 * i.rewind();
+	 * i.next(); // '1970-01-01 00:00:00.000Z+0';
+	 */
 	rewind() {
-		this.position = this.start ? this.start : new Date(0);
+		this._position = this.start ? this.start : new Date(0);
+		delete this._nextIterable;
 		this._sections.forEach(item => item.rewind());
 	}
 
+	/**
+	 * @return {Date|undefined} - current matching to {@link pattern} time
+	 * @example
+	 * import CronTime from 'cron-time';
+	 * let i = new CronTime('0-1,4 0 0 * * *');
+	 * i.start = '1970-01-01 00:00:00.000Z+0';
+	 * i.next();
+	 * i.next();
+	 * i.position; // '1970-01-01 00:00:01.000Z+0';
+	 */
 	get position() {
 		return this._position;
-	}
-
-	set position(value) {
-		this._position = new Date(value);
 	}
 
 	* _next() {
@@ -73,13 +137,16 @@ export default class {
 		delete this._nextIterable;
 	}
 
+	/**
+	 * @return {Date|undefined} - next matching  to the {@link pattern} value
+	 */
 	next() {
 		return this._next().next().value;
 	}
 
 	/**
-	 * @param {Number} size - size of data portion
-	 * @return {Array.Date} - portion of next match to `pattern` times
+	 * @param {Number} [size] - size of data portion
+	 * @return {Array.Date} - next values that match to the {@link pattern}
 	 */
 	nextPortion(size = 1) {
 		return Array.from(new Array(size),
@@ -91,10 +158,10 @@ export default class {
 	}
 
 	/**
-	 * @return {String} - string representation of cron period
+	 * @return {String} - string representation of cron period {@link pattern}
 	 */
 	toString() {
-		return this._string;
+		return this._pattern;
 	}
 
 	* [Symbol.iterator]() {
@@ -122,9 +189,9 @@ export default class {
 			this.position.setDate(this._position.getDate() + 1);
 		}
 	}
-}
 
-/**
- npm install --save crontime
- @name Installation
- */
+	/**
+	 npm install --save crontime
+	 @name Installation
+	 */
+}
