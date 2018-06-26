@@ -62,7 +62,7 @@ export default class {
 
 		const sections = this._pattern.split(' ');
 		if (sections.length !== 6) {
-			throw new Error(`${ERROR_INPUT_MUST_HAVE_6_SECTIONS}: ${pattern}`);
+			throw new Error(`${ERROR_INPUT_MUST_HAVE_6_SECTIONS}. Got: ${pattern}`);
 		}
 
 		this._sections = sections.map((item, index) => new Sections(item, index));
