@@ -1,5 +1,6 @@
 export const ERROR_INPUT_MUST_BE_A_STRING = 'Input must be a string';
 export const ERROR_INPUT_MUST_HAVE_6_SECTIONS = 'Input must have 6 sections separated by spaces';
+export const MUST_BE_CONVERTIBLE = 'Value must be convertible into a Date';
 
 import Sections from './Sections';
 import synonyms from './helpers/synonyms';
@@ -25,7 +26,7 @@ export default class {
 	 * const portion = i.nextPortion(2);
 	 * // [ '1970-01-01T00:00:01.000Z', '1970-01-01T00:00:04.000Z'] ;
 	 */
-	constructor(pattern, {start, end} = {}) {
+	constructor(pattern, options = {}) {
 		if (typeof pattern !== 'string') {
 			throw new Error(`${ERROR_INPUT_MUST_BE_A_STRING}. Got: ${pattern}`);
 		}
@@ -71,9 +72,24 @@ export default class {
 
 		this._sections = sections.map((item, index) => new Sections(item, index));
 
-		this.start = start;
-		this.end = end;
+		if (options.start !== undefined) {
+			this.start = options.start;
+		}
+
+		if (options.end !== undefined) {
+			this.end = options.end;
+		}
+
 		this.rewind();
+	}
+
+	_getDate(value) {
+		const date = new Date(value);
+		if (date.toString() === 'Invalid Date') {
+			throw new Error(`${MUST_BE_CONVERTIBLE}. Got: ${value}`);
+		} else {
+			return date;
+		}
 	}
 
 	/**
@@ -88,7 +104,7 @@ export default class {
 	}
 
 	set start(value) {
-		this._start = new Date(value);
+		this._start = this._getDate(value);
 	}
 
 	/**
@@ -103,7 +119,7 @@ export default class {
 	}
 
 	set end(value) {
-		this._end = new Date(value);
+		this._end = this._getDate(value);
 	}
 
 	/**
@@ -118,7 +134,7 @@ export default class {
 	 * i.next(); // '1970-01-01 00:00:00.000Z+0';
 	 */
 	rewind() {
-		this._position = this.start ? this.start : new Date(0);
+		this._position = this.start ? new Date(this.start) : new Date(0);
 		delete this._nextIterable;
 		this._sections.forEach(item => item.rewind());
 	}
@@ -147,7 +163,8 @@ export default class {
 	 * @return {Date|undefined} - next matching  to the {@link pattern} value
 	 */
 	next() {
-		return this._next().next().value;
+		const value = this._next().next().value;
+		return value !== undefined ? new Date(value) : value;
 	}
 
 	/**
@@ -156,10 +173,7 @@ export default class {
 	 */
 	nextPortion(size = 1) {
 		return Array.from(new Array(size),
-			() => {
-				const next = this.next();
-				return next ? new Date(next) : undefined;
-			}, this)
+			() => this.next(), this)
 			.filter(item => item !== undefined);
 	}
 
@@ -172,7 +186,8 @@ export default class {
 
 	* [Symbol.iterator]() {
 		const [S, M, H, d, m, a] = this._sections;
-		while (this._position <= this.end || !this.end) {
+		const end = this.end;
+		while (this._position <= end || !end) {
 			if (
 				// Match to day of week or day of month
 				m.has(this._position.getUTCMonth()) && (a.has(this._position.getUTCDay()) && d.has(this._position.getUTCDate()))
@@ -181,8 +196,11 @@ export default class {
 				for (const hour of H) {
 					for (const min of M) {
 						for (const sec of S) {
-							this._position.setUTCHours(hour, min, sec);
-							yield this.position;
+							const positionNew = new Date(this._position);
+							positionNew.setUTCHours(hour, min, sec);
+							if (positionNew >= this._position) {
+								yield this._position = positionNew;
+							}
 						}
 						S.rewind();
 					}
@@ -192,7 +210,8 @@ export default class {
 			}
 
 			// Go to the next day
-			this.position.setDate(this._position.getDate() + 1);
+			this._position.setUTCDate(this._position.getUTCDate() + 1);
+			this._position.setUTCHours(0, 0, 0, 0);
 		}
 	}
 
