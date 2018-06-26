@@ -9,11 +9,15 @@ export default class {
 	 * Parse cron time string
 	 * @constructor CronTime
 	 * @param {String} pattern - {@link pattern}
+	 * @param {Object} options - initial options
+	 * @param {Date|String|Number} options.start - {@link start}
+	 * @param {Date|String|Number} options.end - {@link end}
 	 * @example
 	 * import CronTime from 'cron-time';
-	 * let i = new CronTime('0-1,4 0 0 * * *');
-	 * i.start = '1970-01-01 00:00:00.000Z+0'; // Not mandatory
-	 * i.end = '1970-01-01 23:59:59.000Z+0'; // Not mandatory
+	 * let i = new CronTime('0-1,4 0 0 * * *', {
+	 * 	start: '1970-01-01 00:00:00.000Z+0',
+	 * 	end: '1970-01-01 23:59:59.000Z+0'
+	 * });
 	 *
 	 * const next = i.next()
 	 * // 1970-01-01T00:00:00.000Z;
@@ -21,7 +25,7 @@ export default class {
 	 * const portion = i.nextPortion(2);
 	 * // [ '1970-01-01T00:00:01.000Z', '1970-01-01T00:00:04.000Z'] ;
 	 */
-	constructor(pattern) {
+	constructor(pattern, {start, end} = {}) {
 		if (typeof pattern !== 'string') {
 			throw new Error(`${ERROR_INPUT_MUST_BE_A_STRING}. Got: ${pattern}`);
 		}
@@ -67,6 +71,8 @@ export default class {
 
 		this._sections = sections.map((item, index) => new Sections(item, index));
 
+		this.start = start;
+		this.end = end;
 		this.rewind();
 	}
 

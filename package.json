@@ -1,6 +1,6 @@
 {
   "name": "cron-time",
-  "version": "0.0.5a",
+  "version": "0.0.6",
   "description": "Parse cron time string",
   "devDependencies": {
     "babel-eslint": "^8.2.5",

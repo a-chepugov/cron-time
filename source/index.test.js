@@ -107,23 +107,25 @@ describe('*', function () {
 	});
 
 	it('get next values', async function () {
-		let i = new Class('0-4 0 0 * * *');
-		i.end = '1970-01-01 23:59:59.000Z+0';
+		let i = new Class('0-4 0 0 * * *', {
+			start: '2000-01-01 00:00:00.000Z+0',
+			end: '2000-01-01 23:59:59.000Z+0'
+		});
 
 		const p1 = i.nextPortion(1);
 		const p2 = i.nextPortion(2);
 		const p3 = i.nextPortion(3);
 
 		expect(p1).to.deep.equal([
-			new Date('1970-01-01T00:00:00.000Z')
+			new Date('2000-01-01T00:00:00.000Z')
 		]);
 		expect(p2).to.deep.equal([
-			new Date('1970-01-01T00:00:01.000Z'),
-			new Date('1970-01-01T00:00:02.000Z')
+			new Date('2000-01-01T00:00:01.000Z'),
+			new Date('2000-01-01T00:00:02.000Z')
 		]);
 		expect(p3).to.deep.equal([
-			new Date('1970-01-01T00:00:03.000Z'),
-			new Date('1970-01-01T00:00:04.000Z')
+			new Date('2000-01-01T00:00:03.000Z'),
+			new Date('2000-01-01T00:00:04.000Z')
 		]);
 	});
 
