@@ -87,7 +87,7 @@ describe('*', function () {
 		expect(i.next()).to.deep.equal(new Date('1970-01-01T00:00:00.000Z'));
 	});
 
-	it('set position', async function () {
+	it('get position', async function () {
 		let i = new Class('0-1,4 0 0 * * *');
 		expect(i.next()).to.deep.equal(new Date('1970-01-01T00:00:00.000Z'));
 		expect(i.position).to.deep.equal(new Date('1970-01-01T00:00:00.000Z'));
@@ -101,18 +101,14 @@ describe('*', function () {
 			end: '2000-01-01 23:59:59.000Z+0'
 		});
 
-		const p1 = i.nextPortion(1);
-		const p2 = i.nextPortion(2);
-		const p3 = i.nextPortion(3);
-
-		expect(p1).to.deep.equal([
+		expect(i.nextPortion(1)).to.deep.equal([
 			new Date('2000-01-01T00:00:00.000Z')
 		]);
-		expect(p2).to.deep.equal([
+		expect(i.nextPortion(2)).to.deep.equal([
 			new Date('2000-01-01T00:00:01.000Z'),
 			new Date('2000-01-01T00:00:02.000Z')
 		]);
-		expect(p3).to.deep.equal([
+		expect(i.nextPortion(3)).to.deep.equal([
 			new Date('2000-01-01T00:00:03.000Z'),
 			new Date('2000-01-01T00:00:04.000Z')
 		]);
@@ -142,5 +138,18 @@ describe('*', function () {
 	it(MUST_BE_CONVERTIBLE, async function () {
 		expect(() => new Class('* * * * * *', {start: NaN})).to.throw(MUST_BE_CONVERTIBLE);
 	});
+
+	// it('benckmark', async function () {
+	// 	this.timeout(15000);
+	//
+	// 	const i = new Class('* * * * * *', {
+	// 		start: '2000-01-01 00:00:00.000Z+0',
+	// 		end: '2000-12-31 23:59:59.000Z+0'
+	// 	});
+	//
+	// 	console.time('benckmark');
+	// 	i.nextPortion(10000000);
+	// 	console.timeEnd('benckmark');
+	// });
 
 });
