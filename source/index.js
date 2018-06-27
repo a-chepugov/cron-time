@@ -171,9 +171,12 @@ export default class {
 	 * @return {Array.Date} - next values that match to the {@link pattern}
 	 */
 	nextPortion(size = 1) {
-		return Array.from(new Array(size),
-			() => this.next(), this)
-			.filter(item => item !== undefined);
+		const result = [];
+		let next;
+		while (result.length < size && (next = this.next())) {
+			result.push(next);
+		}
+		return result;
 	}
 
 	/**
