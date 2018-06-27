@@ -163,8 +163,7 @@ export default class {
 	 * @return {Date|undefined} - next matching  to the {@link pattern} value
 	 */
 	next() {
-		const value = this._next().next().value;
-		return value !== undefined ? new Date(value) : value;
+		return this._next().next().value;
 	}
 
 	/**
@@ -188,18 +187,21 @@ export default class {
 		const [S, M, H, d, m, a] = this._sections;
 		const end = this.end;
 		while (this._position <= end || !end) {
+			const positionNew = new Date(this._position);
 			if (
 				// Match to day of week or day of month
-				m.has(this._position.getUTCMonth()) && d.has(this._position.getUTCDate()) && a.has(this._position.getUTCDay())
+				m.has(positionNew.getUTCMonth()) && d.has(positionNew.getUTCDate()) && a.has(positionNew.getUTCDay())
 			) {
 				// Iterate hours, minutes & seconds
 				for (const hour of H) {
+					positionNew.setUTCHours(hour);
 					for (const min of M) {
+						positionNew.setUTCMinutes(min);
 						for (const sec of S) {
-							const positionNew = new Date(this._position);
-							positionNew.setUTCHours(hour, min, sec);
+							positionNew.setUTCSeconds(sec);
 							if (positionNew >= this._position) {
-								yield this._position = positionNew;
+								this._position = positionNew;
+								yield new Date(positionNew);
 							}
 						}
 						S.rewind();
