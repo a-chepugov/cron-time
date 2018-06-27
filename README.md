@@ -7,14 +7,18 @@ Parse cron time string
 **Parameters**
 
 -   `pattern` **[String][1]** [pattern][2]
+-   `options` **[Object][3]?** initial options
+    -   `options.start` **([Date][4] \| [String][1] \| [Number][5])?** [start][6]
+    -   `options.end` **([Date][4] \| [String][1] \| [Number][5])?** [end][7]
 
 **Examples**
 
 ```javascript
 import CronTime from 'cron-time';
-let i = new CronTime('0-1,4 0 0 * * *');
-i.start = '1970-01-01 00:00:00.000Z+0'; // Not mandatory
-i.end = '1970-01-01 23:59:59.000Z+0'; // Not mandatory
+let i = new CronTime('0-1,4 0 0 * * *', {
+	start: '1970-01-01 00:00:00.000Z+0',
+	end: '1970-01-01 23:59:59.000Z+0'
+});
 
 const next = i.next()
 // 1970-01-01T00:00:00.000Z;
@@ -61,17 +65,27 @@ also you can use synonyms:
 
 Start value for searching matches to [pattern][2] values
 
+**Parameters**
+
+-   `value` **([Date][4] \| [String][1] \| [Number][5])** 
+
 **Examples**
 
 ```javascript
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *');
 i.start = '1970-01-01 00:00:00.000Z+0';
+console.log(i.start); // '1970-01-01 00:00:00.000Z+0';
+i.rewind();
 ```
 
 ## end
 
 Final value for searching matches to [pattern][2] values
+
+**Parameters**
+
+-   `value` **([Date][4] \| [String][1] \| [Number][5])** 
 
 **Examples**
 
@@ -79,11 +93,13 @@ Final value for searching matches to [pattern][2] values
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *');
 i.end = '1970-12-31 00:00:00.000Z+0';
+console.log(i.end); // '1970-12-31 00:00:00.000Z+0';
+i.rewind();
 ```
 
 ## rewind
 
-Rewinds current matching position to [start][3]
+Rewinds current matching position to [start][6]
 
 **Examples**
 
@@ -91,6 +107,7 @@ Rewinds current matching position to [start][3]
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *');
 i.start = '1970-01-01 00:00:00.000Z+0';
+i.rewind();
 i.next(); // '1970-01-01 00:00:00.000Z+0';
 i.next(); // '1970-01-01 00:00:01.000Z+0';
 i.rewind();
@@ -105,22 +122,23 @@ i.next(); // '1970-01-01 00:00:00.000Z+0';
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *');
 i.start = '1970-01-01 00:00:00.000Z+0';
+i.rewind();
 i.next();
 i.next();
 i.position; // '1970-01-01 00:00:01.000Z+0';
 ```
 
-Returns **([Date][4] \| [undefined][5])** current matching to [pattern][2] time
+Returns **([Date][4] \| [undefined][8])** current matching to [pattern][2] time
 
 ## next
 
-Returns **([Date][4] \| [undefined][5])** next matching  to the [pattern][2] value
+Returns **([Date][4] \| [undefined][8])** next matching  to the [pattern][2] value
 
 ## nextPortion
 
 **Parameters**
 
--   `size` **[Number][6]?** size of data portion (optional, default `1`)
+-   `size` **[Number][5]?** size of data portion (optional, default `1`)
 
 Returns **Array.Date** next values that match to the [pattern][2]
 
@@ -136,10 +154,14 @@ npm install --save crontime
 
 [2]: #pattern
 
-[3]: start
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[6]: start
+
+[7]: end
+
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined

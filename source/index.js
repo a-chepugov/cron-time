@@ -10,9 +10,9 @@ export default class {
 	 * Parse cron time string
 	 * @constructor CronTime
 	 * @param {String} pattern - {@link pattern}
-	 * @param {Object} options - initial options
-	 * @param {Date|String|Number} options.start - {@link start}
-	 * @param {Date|String|Number} options.end - {@link end}
+	 * @param {Object} [options] - initial options
+	 * @param {Date|String|Number} [options.start] - {@link start}
+	 * @param {Date|String|Number} [options.end] - {@link end}
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *', {
@@ -94,32 +94,38 @@ export default class {
 
 	/**
 	 * Start value for searching matches to {@link pattern} values
+	 * @param {Date|String|Number} value
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
 	 * i.start = '1970-01-01 00:00:00.000Z+0';
+	 * console.log(i.start); // '1970-01-01 00:00:00.000Z+0';
+	 * i.rewind();
 	 */
-	get start() {
-		return this._start;
-	}
-
 	set start(value) {
 		this._start = this._getDate(value);
 	}
 
+	get start() {
+		return this._start;
+	}
+
 	/**
 	 * Final value for searching matches to {@link pattern} values
+	 * @param {Date|String|Number} value
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
 	 * i.end = '1970-12-31 00:00:00.000Z+0';
+	 * console.log(i.end); // '1970-12-31 00:00:00.000Z+0';
+	 * i.rewind();
 	 */
-	get end() {
-		return this._end;
-	}
-
 	set end(value) {
 		this._end = this._getDate(value);
+	}
+
+	get end() {
+		return this._end;
 	}
 
 	/**
@@ -128,6 +134,7 @@ export default class {
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
 	 * i.start = '1970-01-01 00:00:00.000Z+0';
+	 * i.rewind();
 	 * i.next(); // '1970-01-01 00:00:00.000Z+0';
 	 * i.next(); // '1970-01-01 00:00:01.000Z+0';
 	 * i.rewind();
@@ -145,6 +152,7 @@ export default class {
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
 	 * i.start = '1970-01-01 00:00:00.000Z+0';
+	 * i.rewind();
 	 * i.next();
 	 * i.next();
 	 * i.position; // '1970-01-01 00:00:01.000Z+0';
