@@ -16,8 +16,8 @@ export default class {
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *', {
-	 * 	start: '1970-01-01 00:00:00.000Z+0',
-	 * 	end: '1970-01-01 23:59:59.000Z+0'
+	 * 	start: '1970-01-01 00:00:00.000Z',
+	 * 	end: '1970-01-01 23:59:59.000Z'
 	 * });
 	 *
 	 * const next = i.next()
@@ -98,8 +98,8 @@ export default class {
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
-	 * i.start = '1970-01-01 00:00:00.000Z+0';
-	 * console.log(i.start); // '1970-01-01 00:00:00.000Z+0';
+	 * i.start = '1970-01-01 00:00:00.000Z';
+	 * console.log(i.start); // '1970-01-01 00:00:00.000Z';
 	 * i.rewind();
 	 */
 	set start(value) {
@@ -116,8 +116,8 @@ export default class {
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
-	 * i.end = '1970-12-31 00:00:00.000Z+0';
-	 * console.log(i.end); // '1970-12-31 00:00:00.000Z+0';
+	 * i.end = '1970-12-31 00:00:00.000Z';
+	 * console.log(i.end); // '1970-12-31 00:00:00.000Z';
 	 * i.rewind();
 	 */
 	set end(value) {
@@ -133,12 +133,12 @@ export default class {
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
-	 * i.start = '1970-01-01 00:00:00.000Z+0';
+	 * i.start = '1970-01-01 00:00:00.000Z';
 	 * i.rewind();
-	 * i.next(); // '1970-01-01 00:00:00.000Z+0';
-	 * i.next(); // '1970-01-01 00:00:01.000Z+0';
+	 * i.next(); // '1970-01-01 00:00:00.000Z';
+	 * i.next(); // '1970-01-01 00:00:01.000Z';
 	 * i.rewind();
-	 * i.next(); // '1970-01-01 00:00:00.000Z+0';
+	 * i.next(); // '1970-01-01 00:00:00.000Z';
 	 */
 	rewind() {
 		this._position = this.start ? new Date(this.start) : new Date(0);
@@ -151,11 +151,11 @@ export default class {
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
-	 * i.start = '1970-01-01 00:00:00.000Z+0';
+	 * i.start = '1970-01-01 00:00:00.000Z';
 	 * i.rewind();
 	 * i.next();
 	 * i.next();
-	 * i.position; // '1970-01-01 00:00:01.000Z+0';
+	 * i.position; // '1970-01-01 00:00:01.000Z';
 	 */
 	get position() {
 		return this._position;
