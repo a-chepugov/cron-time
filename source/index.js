@@ -190,7 +190,7 @@ export default class {
 		while (this._position <= end || !end) {
 			if (
 				// Match to day of week or day of month
-				m.has(this._position.getUTCMonth()) && (a.has(this._position.getUTCDay()) && d.has(this._position.getUTCDate()))
+				m.has(this._position.getUTCMonth()) && d.has(this._position.getUTCDate()) && a.has(this._position.getUTCDay())
 			) {
 				// Iterate hours, minutes & seconds
 				for (const hour of H) {
