@@ -111,6 +111,15 @@ describe('*', function () {
 		]);
 	});
 
+	it('get count portion', async function () {
+		let i = new Class('0 0 * * * *', {
+			start: '2000-01-01 00:00:00.000Z',
+			end: '2001-01-01 23:59:59.000Z'
+		});
+
+		expect(i.countPortion(Number.MAX_SAFE_INTEGER)).to.deep.equal(8808);
+	});
+
 	it('get next values. zone', async function () {
 		let i = new Class('0 0 5-6 * * *', {
 			start: '2000-01-01 00:00:00.000Z',
@@ -159,18 +168,34 @@ describe('*', function () {
 	it(MUST_BE_CONVERTIBLE, async function () {
 		expect(() => new Class('* * * * * *', {start: NaN})).to.throw(MUST_BE_CONVERTIBLE);
 	});
+});
 
-	// it('benckmark', async function () {
-	// 	this.timeout(15000);
-	//
-	// 	const i = new Class('* * * * * *', {
-	// 		start: '2000-01-01 00:00:00.000Z',
-	// 		end: '2000-12-31 23:59:59.000Z'
-	// 	});
-	//
-	// 	console.time('benckmark');
-	// 	i.nextPortion(10000000);
-	// 	console.timeEnd('benckmark');
-	// });
+describe.skip('benchmark', function () {
+
+	it('nextPortion', function () {
+		this.timeout(15000);
+
+		const i = new Class('* * * * * *', {
+			start: '2000-01-01 00:00:00.000Z',
+			end: '2000-12-31 23:59:59.000Z'
+		});
+
+		console.time('nextPortion');
+		i.nextPortion(5000000);
+		console.timeEnd('nextPortion');
+	});
+
+	it('countPortion', function () {
+		this.timeout(15000);
+
+		const i = new Class('* * * * * *', {
+			start: '2000-01-01 00:00:00.000Z',
+			end: '2000-12-31 23:59:59.000Z'
+		});
+
+		console.time('countPortion');
+		i.countPortion(5000000);
+		console.timeEnd('countPortion');
+	});
 
 });

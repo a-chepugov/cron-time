@@ -163,7 +163,7 @@ module.exports = class {
 	}
 
 	/**
-	 * @return {Date|undefined} - current matching to {@link pattern} time
+	 * @return {date|undefined} - current matching to {@link pattern} time
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
@@ -184,15 +184,27 @@ module.exports = class {
 	}
 
 	/**
-	 * @return {Date|undefined} - next matching  to the {@link pattern} value
+	 * @return {Date|undefined} - next matching  to the {@link pattern} value in {@link start}-{@link end} range
 	 */
 	next() {
 		return this.__next().next().value;
 	}
 
 	/**
-	 * @param {Number} [size] - size of data portion
-	 * @return {Array.date} - next values that match to the {@link pattern}
+	 * @param {number} [size] - size of data portion
+	 * @return {number} - values amount that match to the {@link pattern} in {@link start}-{@link end} range
+	 */
+	countPortion(size = 1) {
+		let result = 0;
+		while (result < size && this.next()) {
+			result++;
+		}
+		return result;
+	}
+
+	/**
+	 * @param {number} [size] - size of data portion
+	 * @return {Array.date} - next values that match to the {@link pattern} in {@link start}-{@link end} range
 	 */
 	nextPortion(size = 1) {
 		const result = [];
@@ -204,7 +216,7 @@ module.exports = class {
 	}
 
 	/**
-	 * @return {String} - string representation of cron period {@link pattern}
+	 * @return {string} - string representation of cron period {@link pattern}
 	 */
 	toString() {
 		return this.__pattern;
