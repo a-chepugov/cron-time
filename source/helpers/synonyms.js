@@ -7,4 +7,4 @@ const synonyms = {
 	'@hourly': '0 0 * * * *'
 };
 
-export default (string) => synonyms[string] ? synonyms[string] : string;
+module.exports = (string) => synonyms[string] ? synonyms[string] : string;
