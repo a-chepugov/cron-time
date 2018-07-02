@@ -6,18 +6,19 @@ Parse cron time string
 
 **Parameters**
 
--   `pattern` **[String][1]** [pattern][2]
--   `options` **[Object][3]?** initial options
-    -   `options.start` **([Date][4] \| [String][1] \| [Number][5])?** [start][6]
-    -   `options.end` **([Date][4] \| [String][1] \| [Number][5])?** [end][7]
+-   `pattern` **[string][1]** [pattern][2]
+-   `options` **[object][3]?** initial options
+    -   `options.start` **([date][4] \| [number][5] \| [string][1])?** [start][6]
+    -   `options.end` **([date][4] \| [number][5] \| [string][1])?** [end][7]
+    -   `options.zone` **[string][1]** [zone][8] (optional, default `'+00'`)
 
 **Examples**
 
 ```javascript
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *', {
-	start: '1970-01-01 00:00:00.000Z+0',
-	end: '1970-01-01 23:59:59.000Z+0'
+	start: '1970-01-01 00:00:00.0=John Doe00Z',
+	end: '1970-01-01 23:59:59.000Z'
 });
 
 const next = i.next()
@@ -61,21 +62,27 @@ also you can use synonyms:
 * @hourly   - 0 0 * * * *
 ```
 
+## zone
+
+**Parameters**
+
+-   `value` **[string][1]** zone in [rfc2822][9] format
+
 ## start
 
 Start value for searching matches to [pattern][2] values
 
 **Parameters**
 
--   `value` **([Date][4] \| [String][1] \| [Number][5])** 
+-   `value` **([date][4] \| [number][5] \| [string][1])** any convertible to {@link Date) value
 
 **Examples**
 
 ```javascript
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *');
-i.start = '1970-01-01 00:00:00.000Z+0';
-console.log(i.start); // '1970-01-01 00:00:00.000Z+0';
+i.start = '1970-01-01 00:00:00.000Z';
+console.log(i.start); // '1970-01-01 00:00:00.000Z';
 i.rewind();
 ```
 
@@ -85,15 +92,15 @@ Final value for searching matches to [pattern][2] values
 
 **Parameters**
 
--   `value` **([Date][4] \| [String][1] \| [Number][5])** 
+-   `value` **([date][4] \| [number][5] \| [string][1])** any convertible to {@link Date) value
 
 **Examples**
 
 ```javascript
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *');
-i.end = '1970-12-31 00:00:00.000Z+0';
-console.log(i.end); // '1970-12-31 00:00:00.000Z+0';
+i.end = '1970-12-31 00:00:00.000Z';
+console.log(i.end); // '1970-12-31 00:00:00.000Z';
 i.rewind();
 ```
 
@@ -106,12 +113,12 @@ Rewinds current matching position to [start][6]
 ```javascript
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *');
-i.start = '1970-01-01 00:00:00.000Z+0';
+i.start = '1970-01-01 00:00:00.000Z';
 i.rewind();
-i.next(); // '1970-01-01 00:00:00.000Z+0';
-i.next(); // '1970-01-01 00:00:01.000Z+0';
+i.next(); // '1970-01-01 00:00:00.000Z';
+i.next(); // '1970-01-01 00:00:01.000Z';
 i.rewind();
-i.next(); // '1970-01-01 00:00:00.000Z+0';
+i.next(); // '1970-01-01 00:00:00.000Z';
 ```
 
 ## position
@@ -121,18 +128,18 @@ i.next(); // '1970-01-01 00:00:00.000Z+0';
 ```javascript
 import CronTime from 'cron-time';
 let i = new CronTime('0-1,4 0 0 * * *');
-i.start = '1970-01-01 00:00:00.000Z+0';
+i.start = '1970-01-01 00:00:00.000Z';
 i.rewind();
 i.next();
 i.next();
-i.position; // '1970-01-01 00:00:01.000Z+0';
+i.position; // '1970-01-01 00:00:01.000Z';
 ```
 
-Returns **([Date][4] \| [undefined][8])** current matching to [pattern][2] time
+Returns **([Date][4] \| [undefined][10])** current matching to [pattern][2] time
 
 ## next
 
-Returns **([Date][4] \| [undefined][8])** next matching  to the [pattern][2] value
+Returns **([Date][4] \| [undefined][10])** next matching  to the [pattern][2] value
 
 ## nextPortion
 
@@ -140,7 +147,7 @@ Returns **([Date][4] \| [undefined][8])** next matching  to the [pattern][2] val
 
 -   `size` **[Number][5]?** size of data portion (optional, default `1`)
 
-Returns **Array.Date** next values that match to the [pattern][2]
+Returns **Array.date** next values that match to the [pattern][2]
 
 ## toString
 
@@ -164,4 +171,8 @@ npm install --save crontime
 
 [7]: end
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+[8]: zone
+
+[9]: https://rfc2.ru/5322.rfc/print#p3.3
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined

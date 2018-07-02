@@ -111,6 +111,30 @@ describe('*', function () {
 		]);
 	});
 
+	it('get next values. zone', async function () {
+		let i = new Class('0 0 5-6 * * *', {
+			start: '2000-01-01 00:00:00.000Z',
+			end: '2000-03-01 23:59:59.000Z',
+			zone: '+01'
+		});
+
+		expect(i.next()).to.deep.equal(
+			new Date('2000-01-01T04:00:00.000Z')
+		);
+	});
+
+	it('get next values. zone negative', async function () {
+		let i = new Class('0 0 5-6 * * *', {
+			start: '2000-03-05 01:00:00.000Z',
+			end: '2000-04-01 23:59:59.000Z',
+			zone: '-0410'
+		});
+
+		expect(i.next()).to.deep.equal(
+			new Date('2000-03-06T09:10:00.000Z')
+		);
+	});
+
 	it('toString', async function () {
 		let i = new Class('59 59 23 31 12 *');
 		expect(`${i}`).to.equal('59 59 23 31 12 *');

@@ -3,7 +3,6 @@ const {name, version} = require('./package.json');
 
 const paths = {
 	source: './source/**/!(*test).js',
-	tests: './source/**/*test.js',
 	clear: ['doc'],
 	doc: 'doc'
 };

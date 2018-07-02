@@ -1,22 +1,25 @@
-const ERROR_INPUT_MUST_BE_A_STRING = 'Input must be a string';
-const ERROR_INPUT_MUST_HAVE_6_SECTIONS = 'Input must have 6 sections separated by spaces';
-const MUST_BE_CONVERTIBLE = 'Value must be convertible into a Date';
+const DateTz = require('date-tz');
 
 const Sections = require('./Sections');
 const synonyms = require('./helpers/synonyms');
+
+const ERROR_INPUT_MUST_BE_A_STRING = 'Input must be a string';
+const ERROR_INPUT_MUST_HAVE_6_SECTIONS = 'Input must have 6 sections separated by spaces';
+const MUST_BE_CONVERTIBLE = 'Value must be convertible into a Date';
 
 module.exports = class {
 	/**
 	 * Parse cron time string
 	 * @constructor CronTime
-	 * @param {String} pattern - {@link pattern}
-	 * @param {Object} [options] - initial options
-	 * @param {Date|String|Number} [options.start] - {@link start}
-	 * @param {Date|String|Number} [options.end] - {@link end}
+	 * @param {string} pattern - {@link pattern}
+	 * @param {object} [options] - initial options
+	 * @param {date|number|string} [options.start] - {@link start}
+	 * @param {date|number|string} [options.end] - {@link end}
+	 * @param {string} [options.zone='+00'] - {@link zone}
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *', {
-	 * 	start: '1970-01-01 00:00:00.000Z',
+	 * 	start: '1970-01-01 00:00:00.0=John Doe00Z',
 	 * 	end: '1970-01-01 23:59:59.000Z'
 	 * });
 	 *
@@ -63,14 +66,14 @@ module.exports = class {
 		 *
 		 * @name pattern
 		 */
-		this._pattern = synonyms(pattern);
+		this.__pattern = synonyms(pattern);
 
-		const sections = this._pattern.split(' ');
+		const sections = this.__pattern.split(' ');
 		if (sections.length !== 6) {
 			throw new Error(`${ERROR_INPUT_MUST_HAVE_6_SECTIONS}. Got: ${pattern}`);
 		}
 
-		this._sections = sections.map((item, index) => new Sections(item, index));
+		this.__sections = sections.map((item, index) => new Sections(item, index));
 
 		if (options.start !== undefined) {
 			this.start = options.start;
@@ -80,10 +83,12 @@ module.exports = class {
 			this.end = options.end;
 		}
 
+		this.zone = options.zone;
+
 		this.rewind();
 	}
 
-	_getDate(value) {
+	__getDate(value) {
 		const date = new Date(value);
 		if (date.toString() === 'Invalid Date') {
 			throw new Error(`${MUST_BE_CONVERTIBLE}. Got: ${value}`);
@@ -93,8 +98,19 @@ module.exports = class {
 	}
 
 	/**
+	 * @param {string} value - zone in {@link https://rfc2.ru/5322.rfc/print#p3.3 rfc2822} format
+	 */
+	set zone(value) {
+		this.__zone = value;
+	}
+
+	get zone() {
+		return this.__zone;
+	}
+
+	/**
 	 * Start value for searching matches to {@link pattern} values
-	 * @param {Date|String|Number} value
+	 * @param {date|number|string} value - any convertible to {@link Date) value
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
@@ -103,16 +119,16 @@ module.exports = class {
 	 * i.rewind();
 	 */
 	set start(value) {
-		this._start = this._getDate(value);
+		this.__start = this.__getDate(value);
 	}
 
 	get start() {
-		return this._start;
+		return this.__start;
 	}
 
 	/**
 	 * Final value for searching matches to {@link pattern} values
-	 * @param {Date|String|Number} value
+	 * @param {date|number|string} value - any convertible to {@link Date) value
 	 * @example
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
@@ -121,11 +137,11 @@ module.exports = class {
 	 * i.rewind();
 	 */
 	set end(value) {
-		this._end = this._getDate(value);
+		this.__end = this.__getDate(value);
 	}
 
 	get end() {
-		return this._end;
+		return this.__end;
 	}
 
 	/**
@@ -141,9 +157,9 @@ module.exports = class {
 	 * i.next(); // '1970-01-01 00:00:00.000Z';
 	 */
 	rewind() {
-		this._position = this.start ? new Date(this.start) : new Date(0);
-		delete this._nextIterable;
-		this._sections.forEach(item => item.rewind());
+		this.__position = this.start ? new DateTz(this.zone, this.start) : new DateTz(this.zone, new Date(0));
+		delete this.__nextIterable;
+		this.__sections.forEach(item => item.rewind());
 	}
 
 	/**
@@ -158,25 +174,25 @@ module.exports = class {
 	 * i.position; // '1970-01-01 00:00:01.000Z';
 	 */
 	get position() {
-		return this._position;
+		return this.__position;
 	}
 
-	* _next() {
-		const iterable = this._nextIterable ? this._nextIterable : this._nextIterable = this[Symbol.iterator]();
+	* __next() {
+		const iterable = this.__nextIterable ? this.__nextIterable : this.__nextIterable = this[Symbol.iterator]();
 		yield* iterable;
-		delete this._nextIterable;
+		delete this.__nextIterable;
 	}
 
 	/**
 	 * @return {Date|undefined} - next matching  to the {@link pattern} value
 	 */
 	next() {
-		return this._next().next().value;
+		return this.__next().next().value;
 	}
 
 	/**
 	 * @param {Number} [size] - size of data portion
-	 * @return {Array.Date} - next values that match to the {@link pattern}
+	 * @return {Array.date} - next values that match to the {@link pattern}
 	 */
 	nextPortion(size = 1) {
 		const result = [];
@@ -191,27 +207,27 @@ module.exports = class {
 	 * @return {String} - string representation of cron period {@link pattern}
 	 */
 	toString() {
-		return this._pattern;
+		return this.__pattern;
 	}
 
 	* [Symbol.iterator]() {
-		const [S, M, H, d, m, a] = this._sections;
+		const [S, M, H, d, m, a] = this.__sections;
 		const end = this.end;
-		while (this._position <= end || !end) {
-			const positionNew = new Date(this._position);
+		while (this.__position <= end || !end) {
 			if (
 				// Match to day of week or day of month
-				m.has(positionNew.getUTCMonth()) && d.has(positionNew.getUTCDate()) && a.has(positionNew.getUTCDay())
+				m.has(this.__position.getTzMonth()) && d.has(this.__position.getTzDate()) && a.has(this.__position.getTzDay())
 			) {
+				const positionNew = new DateTz(this.zone, this.__position);
 				// Iterate hours, minutes & seconds
 				for (const hour of H) {
-					positionNew.setUTCHours(hour);
+					positionNew.setTzHours(hour);
 					for (const min of M) {
-						positionNew.setUTCMinutes(min);
+						positionNew.setTzMinutes(min);
 						for (const sec of S) {
-							positionNew.setUTCSeconds(sec);
-							if (positionNew >= this._position) {
-								this._position = positionNew;
+							positionNew.setTzSeconds(sec);
+							if (positionNew >= this.__position) {
+								this.__position = positionNew;
 								yield new Date(positionNew);
 							}
 						}
@@ -223,8 +239,8 @@ module.exports = class {
 			}
 
 			// Go to the next day
-			this._position.setUTCDate(this._position.getUTCDate() + 1);
-			this._position.setUTCHours(0, 0, 0, 0);
+			this.__position.setTzDate(this.__position.getUTCDate() + 1);
+			this.__position.setTzHours(0, 0, 0, 0);
 		}
 	}
 
@@ -232,7 +248,7 @@ module.exports = class {
 	 npm install --save crontime
 	 @name Installation
 	 */
-}
+};
 
 module.exports.ERROR_INPUT_MUST_BE_A_STRING = ERROR_INPUT_MUST_BE_A_STRING;
 module.exports.ERROR_INPUT_MUST_HAVE_6_SECTIONS = ERROR_INPUT_MUST_HAVE_6_SECTIONS;
