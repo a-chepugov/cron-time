@@ -1,9 +1,0 @@
-{
-	"presets": [
-		"env",
-		"minify"
-	],
-	"plugins": [
-		"transform-object-rest-spread"
-	]
-}

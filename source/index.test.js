@@ -1,9 +1,6 @@
-require('babel-core/register');
-require('babel-polyfill');
-
 const expect = require('chai').expect;
 
-const Class = require('./index').default;
+const Class = require('./index');
 const {
 	ERROR_INPUT_MUST_HAVE_6_SECTIONS,
 	ERROR_INPUT_MUST_BE_A_STRING,

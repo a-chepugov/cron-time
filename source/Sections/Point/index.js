@@ -1,15 +1,15 @@
-import sequence from '../../helpers/sequence';
+const sequence = require('../../helpers/sequence');
 
-export const ERROR_INPUT_MUST_BE_A_STRING = 'Input must be a string';
-export const ERROR_INPUT_MUST_BE_A_NUMBER = 'Input must be a number';
-export const ERROR_STRUCTURE = 'Invalid structure';
-export const ERROR_OUT_OF_RANGE = 'Out of range';
-export const ERROR_INVERSED_VALUES = 'Inversed values';
+const ERROR_INPUT_MUST_BE_A_STRING = 'Input must be a string';
+const ERROR_INPUT_MUST_BE_A_NUMBER = 'Input must be a number';
+const ERROR_STRUCTURE = 'Invalid structure';
+const ERROR_OUT_OF_RANGE = 'Out of range';
+const ERROR_INVERSED_VALUES = 'Inversed values';
 
 const patternOne = /^\d+$/;
 const patternInterval = /^\d+-\d+$/;
 
-export default class {
+module.exports = class {
 	constructor(string, max) {
 		if (typeof string !== 'string') {
 			throw new Error(`${ERROR_INPUT_MUST_BE_A_STRING}. Got: `, string);
@@ -89,3 +89,9 @@ export default class {
 		}
 	}
 }
+
+module.exports.ERROR_INPUT_MUST_BE_A_STRING = ERROR_INPUT_MUST_BE_A_STRING;
+module.exports.ERROR_INPUT_MUST_BE_A_NUMBER = ERROR_INPUT_MUST_BE_A_NUMBER;
+module.exports.ERROR_STRUCTURE = ERROR_STRUCTURE;
+module.exports.ERROR_OUT_OF_RANGE = ERROR_OUT_OF_RANGE;
+module.exports.ERROR_INVERSED_VALUES = ERROR_INVERSED_VALUES;

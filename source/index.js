@@ -1,11 +1,11 @@
-export const ERROR_INPUT_MUST_BE_A_STRING = 'Input must be a string';
-export const ERROR_INPUT_MUST_HAVE_6_SECTIONS = 'Input must have 6 sections separated by spaces';
-export const MUST_BE_CONVERTIBLE = 'Value must be convertible into a Date';
+const ERROR_INPUT_MUST_BE_A_STRING = 'Input must be a string';
+const ERROR_INPUT_MUST_HAVE_6_SECTIONS = 'Input must have 6 sections separated by spaces';
+const MUST_BE_CONVERTIBLE = 'Value must be convertible into a Date';
 
-import Sections from './Sections';
-import synonyms from './helpers/synonyms';
+const Sections = require('./Sections');
+const synonyms = require('./helpers/synonyms');
 
-export default class {
+module.exports = class {
 	/**
 	 * Parse cron time string
 	 * @constructor CronTime
@@ -233,3 +233,7 @@ export default class {
 	 @name Installation
 	 */
 }
+
+module.exports.ERROR_INPUT_MUST_BE_A_STRING = ERROR_INPUT_MUST_BE_A_STRING;
+module.exports.ERROR_INPUT_MUST_HAVE_6_SECTIONS = ERROR_INPUT_MUST_HAVE_6_SECTIONS;
+module.exports.MUST_BE_CONVERTIBLE = MUST_BE_CONVERTIBLE;

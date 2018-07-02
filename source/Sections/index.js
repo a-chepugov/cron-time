@@ -1,5 +1,6 @@
-import Point from './Point';
-import sequence from '../helpers/sequence';
+const Point = require('./Point');
+const {ERROR_INPUT_MUST_BE_A_STRING} = require('./Point');
+const sequence = require('../helpers/sequence');
 
 const mapMax = [
 	59, // max second in minute
@@ -10,7 +11,7 @@ const mapMax = [
 	7 // max day in week
 ];
 
-export default class {
+module.exports = class {
 	constructor(string, type) {
 		if (typeof string !== 'string') {
 			throw new Error(ERROR_INPUT_MUST_BE_A_STRING);

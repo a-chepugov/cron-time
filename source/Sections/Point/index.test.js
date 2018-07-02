@@ -1,9 +1,6 @@
-require('babel-core/register');
-require('babel-polyfill');
-
 const expect = require('chai').expect;
 
-const Class = require('./index').default;
+const Class = require('./index');
 const {
 	ERROR_INPUT_MUST_BE_A_STRING,
 	ERROR_INPUT_MUST_BE_A_NUMBER,
