@@ -23,11 +23,10 @@ module.exports = class {
 	 * 	end: '1970-01-01 23:59:59.000Z'
 	 * });
 	 *
-	 * const next = i.next()
-	 * // 1970-01-01T00:00:00.000Z;
+	 * const next = i.next(); // 1970-01-01T00:00:00.000Z
 	 *
 	 * const portion = i.nextPortion(2);
-	 * // [ '1970-01-01T00:00:01.000Z', '1970-01-01T00:00:04.000Z'] ;
+	 * // [ '1970-01-01T00:00:01.000Z', '1970-01-01T00:00:04.000Z']
 	 */
 	constructor(pattern, options = {}) {
 		if (typeof pattern !== 'string') {
@@ -115,7 +114,7 @@ module.exports = class {
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
 	 * i.start = '1970-01-01 00:00:00.000Z';
-	 * console.log(i.start); // '1970-01-01 00:00:00.000Z';
+	 * console.log(i.start); // '1970-01-01 00:00:00.000Z'
 	 * i.rewind();
 	 */
 	set start(value) {
@@ -133,7 +132,7 @@ module.exports = class {
 	 * import CronTime from 'cron-time';
 	 * let i = new CronTime('0-1,4 0 0 * * *');
 	 * i.end = '1970-12-31 00:00:00.000Z';
-	 * console.log(i.end); // '1970-12-31 00:00:00.000Z';
+	 * console.log(i.end); // '1970-12-31 00:00:00.000Z'
 	 * i.rewind();
 	 */
 	set end(value) {
@@ -151,10 +150,10 @@ module.exports = class {
 	 * let i = new CronTime('0-1,4 0 0 * * *');
 	 * i.start = '1970-01-01 00:00:00.000Z';
 	 * i.rewind();
-	 * i.next(); // '1970-01-01 00:00:00.000Z';
-	 * i.next(); // '1970-01-01 00:00:01.000Z';
+	 * i.next(); // '1970-01-01 00:00:00.000Z'
+	 * i.next(); // '1970-01-01 00:00:01.000Z'
 	 * i.rewind();
-	 * i.next(); // '1970-01-01 00:00:00.000Z';
+	 * i.next(); // '1970-01-01 00:00:00.000Z'
 	 */
 	rewind() {
 		this.__position = this.start ? new DateTz(this.zone, this.start) : new DateTz(this.zone, new Date(0));
@@ -171,7 +170,7 @@ module.exports = class {
 	 * i.rewind();
 	 * i.next();
 	 * i.next();
-	 * i.position; // '1970-01-01 00:00:01.000Z';
+	 * i.position; // '1970-01-01 00:00:01.000Z'
 	 */
 	get position() {
 		return this.__position;

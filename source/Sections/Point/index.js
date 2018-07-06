@@ -12,11 +12,11 @@ const patternInterval = /^\d+-\d+$/;
 module.exports = class {
 	constructor(string, max) {
 		if (typeof string !== 'string') {
-			throw new Error(`${ERROR_INPUT_MUST_BE_A_STRING}. Got: `, string);
+			throw new Error(ERROR_INPUT_MUST_BE_A_STRING, 'Got: ', string);
 		}
 
 		if (typeof max !== 'number') {
-			throw new Error(`${ERROR_INPUT_MUST_BE_A_NUMBER}. Got:`, max);
+			throw new Error(ERROR_INPUT_MUST_BE_A_NUMBER, 'Got: ', max);
 		}
 
 		const conf = string.split('/');
@@ -33,7 +33,7 @@ module.exports = class {
 				break;
 			}
 			default: {
-				throw new Error(`${ERROR_STRUCTURE}: ${string}`);
+				throw new Error(ERROR_STRUCTURE, 'Got: ', string);
 			}
 		}
 
@@ -88,7 +88,7 @@ module.exports = class {
 			yield this._values[this._position];
 		}
 	}
-}
+};
 
 module.exports.ERROR_INPUT_MUST_BE_A_STRING = ERROR_INPUT_MUST_BE_A_STRING;
 module.exports.ERROR_INPUT_MUST_BE_A_NUMBER = ERROR_INPUT_MUST_BE_A_NUMBER;
