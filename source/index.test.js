@@ -111,6 +111,24 @@ describe('*', function () {
 		]);
 	});
 
+	it('get next values. shifted', async function () {
+		let i = new Class('5-6 13-14 22 * * *', {
+			start: '2000-01-01 23:00:00.000Z',
+			end: '2000-01-02 23:59:59.000Z'
+		});
+
+		expect(i.nextPortion(1)).to.deep.equal([
+			new Date('2000-01-02T22:13:05.000Z')
+		]);
+		expect(i.nextPortion(2)).to.deep.equal([
+			new Date('2000-01-02T22:13:06.000Z'),
+			new Date('2000-01-02T22:14:05.000Z')
+		]);
+		expect(i.nextPortion(3)).to.deep.equal([
+			new Date('2000-01-02T22:14:06.000Z'),
+		]);
+	});
+
 	it('get count portion', async function () {
 		let i = new Class('0 0 * * * *', {
 			start: '2000-01-01 00:00:00.000Z',
