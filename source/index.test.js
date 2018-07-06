@@ -172,6 +172,10 @@ describe('*', function () {
 		expect(`${i}`).to.equal('59 59 23 31 12 * | +0400');
 	});
 
+});
+
+describe('throw', function () {
+
 	it(ERROR_INPUT_MUST_BE_A_STRING, async function () {
 		expect(() => new Class(1)).to.throw(ERROR_INPUT_MUST_BE_A_STRING);
 	});
@@ -191,6 +195,7 @@ describe('*', function () {
 	it(MUST_BE_CONVERTIBLE, async function () {
 		expect(() => new Class('* * * * * *', {start: NaN})).to.throw(MUST_BE_CONVERTIBLE);
 	});
+
 });
 
 describe.skip('benchmark', function () {
