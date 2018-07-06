@@ -162,9 +162,14 @@ describe('*', function () {
 		);
 	});
 
+	it('pattern', async function () {
+		let i = new Class('0-1,4 0 0 * * *');
+		expect(i.pattern).to.equal('0-1,4 0 0 * * *');
+	});
+
 	it('toString', async function () {
-		let i = new Class('59 59 23 31 12 *');
-		expect(`${i}`).to.equal('59 59 23 31 12 *');
+		let i = new Class('59 59 23 31 12 *', {zone: '+04'});
+		expect(`${i}`).to.equal('59 59 23 31 12 * | +0400');
 	});
 
 	it(ERROR_INPUT_MUST_BE_A_STRING, async function () {

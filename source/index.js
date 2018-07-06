@@ -1,4 +1,5 @@
 const DateTz = require('date-tz');
+const {INVALID_ZONE_FORMAT, patternTimezone} = require('date-tz');
 
 const Sections = require('./Sections');
 const synonyms = require('./helpers/synonyms');
@@ -28,43 +29,11 @@ module.exports = class {
 	 * const portion = i.nextPortion(2);
 	 * // [ '1970-01-01T00:00:01.000Z', '1970-01-01T00:00:04.000Z']
 	 */
-	constructor(pattern, options = {}) {
+	constructor(pattern, {start, end, zone = '+0000'} = {}) {
 		if (typeof pattern !== 'string') {
 			throw new Error(`${ERROR_INPUT_MUST_BE_A_STRING}. Got: ${pattern}`);
 		}
 
-		/**
-		 * String that represents period in cron format
-		 * @example
-		 * *  *  *  *  *  *
-		 * ┬  ┬  ┬  ┬  ┬  ┬
-		 * │  │  │  │  │  └─────────────── day of week (0 - 7) (0 and 7 - represents Sunday)
-		 * │  │  │  │  └────────────────── month (1 - 12)
-		 * │  │  │  └───────────────────── day of month (1 - 31)
-		 * │  │  └──────────────────────── hour (0 - 23)
-		 * │  └─────────────────────────── minute (0 - 59)
-		 * └────────────────────────────── second (0 - 59)
-		 *
-		 * * * * * * * - every second
-		 * 0 * * * * * - every minute
-		 * 0 0 * * * * - every hour
-		 * 0 0 0 * * * - every day
-		 * 0 0 0 * * 1 - every monday
-		 * 0 1-2 * * * - every first and second minutes of hour
-		 * 0 0 1,2 * * - every first and second hours of day
-		 * 0 0 0-12/2 * * - every second hour of day first half
-		 *
-		 * also you can use synonyms:
-		 * * @yearly   - 0 0 0 1 1 *
-		 * * @annually - 0 0 0 1 1 *
-		 * * @monthly  - 0 0 0 1 * *
-		 * * @weekly   - 0 0 0 * * 0
-		 * * @daily    - 0 0 0 * * *
-		 * * @hourly   - 0 0 * * * *
-
-		 *
-		 * @name pattern
-		 */
 		this.__pattern = synonyms(pattern);
 
 		const sections = this.__pattern.split(' ');
@@ -74,17 +43,55 @@ module.exports = class {
 
 		this.__sections = sections.map((item, index) => new Sections(item, index));
 
-		if (options.start !== undefined) {
-			this.start = options.start;
+		if (start !== undefined) {
+			this.start = start;
 		}
 
-		if (options.end !== undefined) {
-			this.end = options.end;
+		if (end !== undefined) {
+			this.end = end;
 		}
 
-		this.zone = options.zone;
+		this.zone = zone;
 
 		this.rewind();
+	}
+
+	/**
+	 * String that represents period in cron format
+	 * @example
+	 * *  *  *  *  *  *
+	 * ┬  ┬  ┬  ┬  ┬  ┬
+	 * │  │  │  │  │  └─────────────── day of week (0 - 7) (0 and 7 - represents Sunday)
+	 * │  │  │  │  └────────────────── month (1 - 12)
+	 * │  │  │  └───────────────────── day of month (1 - 31)
+	 * │  │  └──────────────────────── hour (0 - 23)
+	 * │  └─────────────────────────── minute (0 - 59)
+	 * └────────────────────────────── second (0 - 59)
+	 *
+	 * * * * * * * - every second
+	 * 0 * * * * * - every minute
+	 * 0 0 * * * * - every hour
+	 * 0 0 0 * * * - every day
+	 * 0 0 0 * * 1 - every monday
+	 * 0 1-2 * * * - every first and second minutes of hour
+	 * 0 0 1,2 * * - every first and second hours of day
+	 * 0 0 0-12/2 * * - every second hour of day first half
+	 *
+	 * also you can use synonyms:
+	 * * @yearly   - 0 0 0 1 1 *
+	 * * @annually - 0 0 0 1 1 *
+	 * * @monthly  - 0 0 0 1 * *
+	 * * @weekly   - 0 0 0 * * 0
+	 * * @daily    - 0 0 0 * * *
+	 * * @hourly   - 0 0 * * * *
+	 *
+	 * You cat access to pattern in this way
+	 * import CronTime from 'cron-time';
+	 * let i = new CronTime('0-1,4 0 0 * * *');
+	 * i.pattern // '0-1,4 0 0 * * *'
+	 */
+	get pattern() {
+		return this.__pattern;
 	}
 
 	__getDate(value) {
@@ -100,7 +107,15 @@ module.exports = class {
 	 * @param {string} value - zone in {@link https://rfc2.ru/5322.rfc/print#p3.3 rfc2822} format
 	 */
 	set zone(value) {
-		this.__zone = value;
+		const result = patternTimezone.exec(value);
+		if (result) {
+			let [, sign = '+', h = '00', m = '00'] = result;
+			this.__h = Number.parseInt(`${sign}${h}`);
+			this.__m = Number.parseInt(`${sign}${m}`);
+			this.__zone = `${sign}${h}${m}`;
+		} else {
+			throw new Error(`${INVALID_ZONE_FORMAT}. Got: ${value}`);
+		}
 	}
 
 	get zone() {
@@ -218,7 +233,7 @@ module.exports = class {
 	 * @return {string} - string representation of cron period {@link pattern}
 	 */
 	toString() {
-		return this.__pattern;
+		return `${this.pattern} | ${this.zone}`;
 	}
 
 	* [Symbol.iterator]() {
@@ -264,3 +279,4 @@ module.exports = class {
 module.exports.ERROR_INPUT_MUST_BE_A_STRING = ERROR_INPUT_MUST_BE_A_STRING;
 module.exports.ERROR_INPUT_MUST_HAVE_6_SECTIONS = ERROR_INPUT_MUST_HAVE_6_SECTIONS;
 module.exports.MUST_BE_CONVERTIBLE = MUST_BE_CONVERTIBLE;
+module.exports.INVALID_ZONE_FORMAT = INVALID_ZONE_FORMAT;
